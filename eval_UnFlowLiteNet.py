@@ -140,7 +140,6 @@ def test_estimate_all():
 
     # Load pretrained model
     model_save_name = 'UnsupervisedLiteFlowNet_pretrained.pt'
-    #PATH = "./models/model_saved_31_Octobre_2024.pt"
     PATH = "./models/UnsupervisedLiteFlowNet_pretrained.pt"
     unliteflownet = Network().to(device)
     unliteflownet.load_state_dict(torch.load(PATH)['model_state_dict'])
@@ -194,8 +193,8 @@ def test_estimate():
 
     # Load pretrained model
     model_save_name = 'UnsupervisedLiteFlowNet_pretrained.pt'
-    #PATH = f"./models/{model_save_name}"
-    PATH = "./models/model_saved_31_Octobre_2024.pt"
+    PATH = f"./models/{model_save_name}"
+    #PATH = "./models/model_saved_31_Octobre_2024.pt"
     unliteflownet = Network().to(device)
     unliteflownet.load_state_dict(torch.load(PATH)['model_state_dict'])
     unliteflownet.eval()
