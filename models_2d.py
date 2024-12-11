@@ -59,9 +59,9 @@ class UpConvBlock2D(nn.Module):
         return self.conv_block(x)
 
 class UNetLSTM2D(nn.Module):
-    def __init__(self, num_classes,input_height,input_width,num_convs=2,stride=1,start_dim=16):
+    def __init__(self, input_dim, num_classes,input_height,input_width,num_convs=2,stride=1,start_dim=16):
         super(UNetLSTM2D, self).__init__()
-        self.down1 = ConvBlock2D(2, start_dim, num_convs=num_convs, stride=1)  # 4 channels for u, v, w, p
+        self.down1 = ConvBlock2D(input_dim, start_dim, num_convs=num_convs, stride=1)  # 4 channels for u, v, w, p
         self.down2 = ConvBlock2D(start_dim, start_dim*2, num_convs=num_convs, stride=stride)
         self.down3 = ConvBlock2D(start_dim*2, start_dim*4, num_convs=num_convs, stride=stride)
         self.down4 = ConvBlock2D(start_dim*4, start_dim*8, num_convs=num_convs, stride=stride)
@@ -70,6 +70,7 @@ class UNetLSTM2D(nn.Module):
         self.input_height = input_height
         self.input_width = input_width
         self.start_dim = start_dim
+        self.input_dim = input_dim
         print(f"U_net Base: {start_dim}, Fin: {start_dim*16}")
         
         # Calcul des dimensions après chaque couche
@@ -102,7 +103,8 @@ class UNetLSTM2D(nn.Module):
         #lstm_input_size = start_dim*8
         print(f"LSTM Input :{lstm_input_size}")
         
-        self.lstm = nn.LSTM(lstm_input_size, start_dim*16, num_layers=2, batch_first=True, dropout=0.5)
+        #self.lstm = nn.LSTM(lstm_input_size, start_dim*16, num_layers=2, batch_first=True, dropout=0.5)
+        self.lstm = nn.LSTM(lstm_input_size, start_dim*16, num_layers=1, batch_first=True)
         self.up4 = UpConvBlock2D(start_dim*16, start_dim*8, start_dim*8, start_dim*8, num_convs=num_convs)
         self.up3 = UpConvBlock2D(start_dim*8, start_dim*4, start_dim*4, start_dim*4, num_convs=num_convs)
         self.up2 = UpConvBlock2D(start_dim*4, start_dim*2, start_dim*2, start_dim*2, num_convs=num_convs)
