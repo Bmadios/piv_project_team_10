@@ -61,7 +61,7 @@ class UpConvBlock2D(nn.Module):
 class UNetLSTM2D(nn.Module):
     def __init__(self, input_dim, num_classes,input_height,input_width,num_convs=2,stride=1,start_dim=16):
         super(UNetLSTM2D, self).__init__()
-        self.down1 = ConvBlock2D(input_dim, start_dim, num_convs=num_convs, stride=1)  # 4 channels for u, v, w, p
+        self.down1 = ConvBlock2D(input_dim, start_dim, num_convs=num_convs, stride=1)
         self.down2 = ConvBlock2D(start_dim, start_dim*2, num_convs=num_convs, stride=stride)
         self.down3 = ConvBlock2D(start_dim*2, start_dim*4, num_convs=num_convs, stride=stride)
         self.down4 = ConvBlock2D(start_dim*4, start_dim*8, num_convs=num_convs, stride=stride)
@@ -73,7 +73,7 @@ class UNetLSTM2D(nn.Module):
         self.input_dim = input_dim
         print(f"U_net Base: {start_dim}, Fin: {start_dim*16}")
         
-        # Calcul des dimensions après chaque couche
+        
         h, w = input_height, input_width
         h1, w1 = calculate_conv_output_size(h, stride=1), calculate_conv_output_size(w, stride=1)
         h1, w1 = calculate_pool_output_size(h1), calculate_pool_output_size(w1)
@@ -95,15 +95,13 @@ class UNetLSTM2D(nn.Module):
             raise ValueError("Les dimensions après les convolutions et les poolings sont nulles. Veuillez ajuster les paramètres du réseau (stride, padding, etc.) pour éviter cela.")
         
         #print(h4, w4)
-        print(h5, w5)
-        print(h4, w4)
+        #print(h5, w5)
+        #print(h4, w4)
         # Taille aplatie pour l'entrée du LSTM
-        #lstm_input_size = start_dim*8*h3*w3  # 128 canaux de down4
-        lstm_input_size = start_dim*16*h4*w4  # 128 canaux de down4
-        #lstm_input_size = start_dim*8
-        print(f"LSTM Input :{lstm_input_size}")
+        lstm_input_size = start_dim*16*h4*w4 
         
-        #self.lstm = nn.LSTM(lstm_input_size, start_dim*16, num_layers=2, batch_first=True, dropout=0.5)
+        #print(f"LSTM Input :{lstm_input_size}")
+        
         self.lstm = nn.LSTM(lstm_input_size, start_dim*16, num_layers=1, batch_first=True)
         self.up4 = UpConvBlock2D(start_dim*16, start_dim*8, start_dim*8, start_dim*8, num_convs=num_convs)
         self.up3 = UpConvBlock2D(start_dim*8, start_dim*4, start_dim*4, start_dim*4, num_convs=num_convs)
